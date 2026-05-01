@@ -1,6 +1,6 @@
-import prisma from "../config/prisma.js";
+const prisma = require("../config/prisma");
 
-export const getDashboard = async (req, res) => {
+exports.getDashboard = async (req, res) => {
     const transactions = await prisma.transaction.findMany({
         where: { userId: req.userId },
     });

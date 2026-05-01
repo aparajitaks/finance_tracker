@@ -1,11 +1,11 @@
-import express from "express";
-import {
+const express = require("express");
+const {
     createTransaction,
     getTransactions,
     deleteTransaction,
-} from "../controllers/transaction.controller.js";
+} = require("../controllers/transaction.controller");
 
-import { authMiddleware } from "../middleware/auth.js";
+const { authMiddleware } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -13,4 +13,4 @@ router.post("/", authMiddleware, createTransaction);
 router.get("/", authMiddleware, getTransactions);
 router.delete("/:id", authMiddleware, deleteTransaction);
 
-export default router;
+module.exports = router;
