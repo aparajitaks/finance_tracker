@@ -1,12 +1,24 @@
 {
-  "name": "desktop",
+  "name": "finance-tracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Personal Finance Tracker — Node.js + Express + Prisma + PostgreSQL",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "db:generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev",
+    "db:studio": "npx prisma studio",
+    "test": "node test_suite.js",
+    "postinstall": "prisma generate"
   },
-  "keywords": [],
+  "keywords": [
+    "finance",
+    "tracker",
+    "express",
+    "prisma",
+    "postgresql"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -18,10 +30,11 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0",
-    "prisma": "^7.8.0"
+    "pg": "^8.20.0"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0"
+    "@types/node": "^25.6.0",
+    "prisma": "^7.8.0",
+    "nodemon": "^3.0.0"
   }
 }
