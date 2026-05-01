@@ -1,0 +1,43 @@
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  type  String // income | expense
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  type        String   // income | expense
+  description String
+  date        DateTime
+  currency    String   @default("INR")
+
+  userId     Int
+  categoryId Int
+
+  user     User     @relation(fields: [userId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Budget {
+  id         Int    @id @default(autoincrement())
+  limit      Float
+  categoryId Int
+  userId     Int
+
+  category Category @relation(fields: [categoryId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+}
