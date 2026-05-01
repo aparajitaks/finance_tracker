@@ -5,6 +5,10 @@ const path = require("path");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const logger = require("./src/utils/logger");
+const validateEnv = require("./src/utils/env.validator");
+
+// Validate Environment before starting
+validateEnv();
 
 const app = express();
 
