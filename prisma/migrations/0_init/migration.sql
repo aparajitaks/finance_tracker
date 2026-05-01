@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -21,7 +24,7 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Transaction" (
     "id" SERIAL NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL,
+    "amount" DECIMAL(10,2) NOT NULL,
     "type" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
@@ -35,7 +38,7 @@ CREATE TABLE "Transaction" (
 -- CreateTable
 CREATE TABLE "Budget" (
     "id" SERIAL NOT NULL,
-    "limit" DOUBLE PRECISION NOT NULL,
+    "limit" DECIMAL(10,2) NOT NULL,
     "month" TEXT NOT NULL,
     "categoryId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
@@ -60,3 +63,4 @@ ALTER TABLE "Budget" ADD CONSTRAINT "Budget_categoryId_fkey" FOREIGN KEY ("categ
 
 -- AddForeignKey
 ALTER TABLE "Budget" ADD CONSTRAINT "Budget_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
