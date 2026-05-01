@@ -4,6 +4,7 @@
   "description": "Personal Finance Tracker — Node.js + Express + Prisma + PostgreSQL",
   "main": "index.js",
   "scripts": {
+    "build": "npm install && npx prisma generate",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "db:generate": "npx prisma generate",

@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: finance-tracker
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      # Tell Render we need these keys. 
+      # `sync: false` means Render will securely prompt you for them in the dashboard 
+      # once, instead of us hardcoding them in this file.
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_DATABASE_URL
+        sync: false
+      
+      # Automatically generate a secure 256-bit secret for production!
+      - key: JWT_SECRET
+        generateValue: true
+      
+      # Standard Node port
+      - key: PORT
+        value: 10000
