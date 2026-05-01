@@ -87,10 +87,11 @@ async function loadAll() {
     // Defensively extract data
     const dash = dashRes.data || dashRes;
     const cats = catsRes.data || catsRes || [];
-    let txs = txsRes.transactions || txsRes.data || txsRes;
+    let txs = txsRes.data?.transactions || txsRes.transactions || txsRes.data || [];
 
-    if (txsRes.pagination) {
-        const { page, totalPages, total } = txsRes.pagination;
+    const paginationMeta = txsRes.data?.pagination || txsRes.pagination;
+    if (paginationMeta) {
+        const { page, totalPages, total } = paginationMeta;
         console.log(`Loaded page ${page} of ${totalPages} (${total} total transactions)`);
     }
 
