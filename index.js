@@ -14,7 +14,10 @@ const reportRoutes = require("./src/routes/report.routes");
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+
+// Resolve public dir relative to this file — works on local + Render
+const publicDir = path.resolve(__dirname, "public");
+app.use(express.static(publicDir));
 
 app.use("/auth", authRoutes);
 app.use("/categories", categoryRoutes);
@@ -24,8 +27,9 @@ app.use("/budgets", budgetRoutes);
 app.use("/profile", profileRoutes);
 app.use("/reports", reportRoutes);
 
+// Fallback: serve index.html for root
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(publicDir, "index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
