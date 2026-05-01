@@ -1,6 +1,5 @@
 const prisma = require("../config/prisma");
 
-// Default categories to seed for the system
 const DEFAULT_CATEGORIES = [
     { name: "Salary", type: "income" },
     { name: "Freelance", type: "income" },
@@ -50,7 +49,12 @@ exports.createCategory = async (req, res) => {
 
 exports.getCategories = async (req, res) => {
     try {
-        const { type } = req.query; // optional filter: ?type=income or ?type=expense
+        const { type } = req.query;
+
+        // Validate type filter if provided
+        if (type && !["income", "expense"].includes(type)) {
+            return res.status(400).json({ msg: "type filter must be 'income' or 'expense'" });
+        }
 
         const where = type ? { type } : {};
         const categories = await prisma.category.findMany({
@@ -69,14 +73,23 @@ exports.deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Check if any transactions use this category
-        const txCount = await prisma.transaction.count({
-            where: { categoryId: parseInt(id) },
+        // Check if category exists
+        const category = await prisma.category.findUnique({
+            where: { id: parseInt(id) },
         });
+        if (!category) {
+            return res.status(404).json({ msg: "Category not found" });
+        }
 
-        if (txCount > 0) {
+        // Check if any transactions or budgets use this category
+        const [txCount, budgetCount] = await Promise.all([
+            prisma.transaction.count({ where: { categoryId: parseInt(id) } }),
+            prisma.budget.count({ where: { categoryId: parseInt(id) } }),
+        ]);
+
+        if (txCount > 0 || budgetCount > 0) {
             return res.status(400).json({
-                msg: `Cannot delete: ${txCount} transaction(s) use this category`,
+                msg: `Cannot delete: ${txCount} transaction(s) and ${budgetCount} budget(s) use this category`,
             });
         }
 
@@ -91,7 +104,6 @@ exports.deleteCategory = async (req, res) => {
     }
 };
 
-// Seed default categories (idempotent — safe to call multiple times)
 exports.seedCategories = async (req, res) => {
     try {
         let created = 0;
