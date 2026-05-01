@@ -70,3 +70,39 @@ exports.deleteTransaction = async (req, res) => {
         res.status(500).json({ msg: "Server error" });
     }
 };
+
+exports.updateTransaction = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { amount, type, description, date, categoryId } = req.body;
+
+        if (!amount || !type || !description || !date || !categoryId) {
+            return res.status(400).json({
+                msg: "All fields required: amount, type, description, date, categoryId",
+            });
+        }
+
+        const category = await prisma.category.findUnique({
+            where: { id: parseInt(categoryId) },
+        });
+        if (!category) {
+            return res.status(404).json({ msg: "Category not found" });
+        }
+
+        const transaction = await prisma.transaction.update({
+            where: { id: parseInt(id), userId: req.userId },
+            data: {
+                amount: parseFloat(amount),
+                type,
+                description,
+                date: new Date(date),
+                categoryId: parseInt(categoryId),
+            },
+        });
+
+        res.json(transaction);
+    } catch (err) {
+        console.error("Update transaction error:", err);
+        res.status(500).json({ msg: "Server error" });
+    }
+};
