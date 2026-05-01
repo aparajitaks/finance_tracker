@@ -80,14 +80,24 @@ async function showApp() {
 }
 
 async function loadAll() {
-    const [dash, cats, txs] = await Promise.all([
+    const [dashRes, catsRes, txsRes] = await Promise.all([
         api("/dashboard"), api("/categories"), api("/transactions")
     ]);
 
+    // Defensively extract data
+    const dash = dashRes.data || dashRes;
+    const cats = catsRes.data || catsRes || [];
+    let txs = txsRes.data || txsRes;
+
+    if (!Array.isArray(txs)) {
+        console.error("Expected array for transactions, got:", txs);
+        txs = [];
+    }
+
     // Stats
-    $("#s-income").textContent = fmt(dash.totalIncome);
-    $("#s-expense").textContent = fmt(dash.totalExpense);
-    $("#s-savings").textContent = fmt(dash.savings);
+    $("#s-income").textContent = fmt(dash.totalIncome || 0);
+    $("#s-expense").textContent = fmt(dash.totalExpense || 0);
+    $("#s-savings").textContent = fmt(dash.savings || 0);
 
     // Category dropdowns
     const catOpts = cats.map(c => `<option value="${c.id}">${c.name} (${c.type})</option>`).join("");
