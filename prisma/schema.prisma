@@ -1,5 +1,5 @@
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 generator client {
@@ -44,9 +44,12 @@ model Transaction {
 model Budget {
   id         Int    @id @default(autoincrement())
   limit      Float
+  month      String // Format: YYYY-MM
   categoryId Int
   userId     Int
 
   category Category @relation(fields: [categoryId], references: [id])
   user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, categoryId, month])
 }
