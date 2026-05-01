@@ -87,10 +87,15 @@ async function loadAll() {
     // Defensively extract data
     const dash = dashRes.data || dashRes;
     const cats = catsRes.data || catsRes || [];
-    let txs = txsRes.data || txsRes;
+    let txs = txsRes.transactions || txsRes.data || txsRes;
+
+    if (txsRes.pagination) {
+        const { page, totalPages, total } = txsRes.pagination;
+        console.log(`Loaded page ${page} of ${totalPages} (${total} total transactions)`);
+    }
 
     if (!Array.isArray(txs)) {
-        console.error("Expected array for transactions, got:", txs);
+        console.error("Expected array for transactions, got:", txsRes);
         txs = [];
     }
 
