@@ -1,3 +1,11 @@
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -15,6 +23,7 @@ model Category {
   type  String // income | expense
 
   transactions Transaction[]
+  budgets Budget[]
 }
 
 model Transaction {
