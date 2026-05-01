@@ -1,9 +1,8 @@
 const prisma = require("../config/prisma");
 
-exports.getDashboard = async (req, res) => {
+exports.getDashboard = async (req, res, next) => {
     try {
-        // Use aggregate instead of fetching all records into memory
-        const [incomeResult, expenseResult] = await Promise.all([
+        const [incomeResult, expenseResult, categorySpending] = await Promise.all([
             prisma.transaction.aggregate({
                 where: { userId: req.userId, type: "income" },
                 _sum: { amount: true }
@@ -11,21 +10,36 @@ exports.getDashboard = async (req, res) => {
             prisma.transaction.aggregate({
                 where: { userId: req.userId, type: "expense" },
                 _sum: { amount: true }
+            }),
+            prisma.transaction.groupBy({
+                by: ['categoryId'],
+                where: { userId: req.userId, type: "expense" },
+                _sum: { amount: true },
+                orderBy: { _sum: { amount: 'desc' } }
             })
         ]);
 
-        const totalIncome = incomeResult._sum.amount || 0;
-        const totalExpense = expenseResult._sum.amount || 0;
+        const totalIncome = incomeResult._sum.amount ? parseFloat(incomeResult._sum.amount) : 0;
+        const totalExpense = expenseResult._sum.amount ? parseFloat(expenseResult._sum.amount) : 0;
         const savings = totalIncome - totalExpense;
 
-        res.json({ totalIncome, totalExpense, savings });
+        // Fetch category names for the grouped data
+        const categoryIds = categorySpending.map(c => c.categoryId);
+        const categories = await prisma.category.findMany({ where: { id: { in: categoryIds } } });
+        const categoryMap = categories.reduce((acc, cat) => ({ ...acc, [cat.id]: cat.name }), {});
+
+        const analytics = categorySpending.map(c => ({
+            category: categoryMap[c.categoryId] || 'Unknown',
+            amount: c._sum.amount ? parseFloat(c._sum.amount) : 0
+        }));
+
+        res.json({ totalIncome, totalExpense, savings, categoryAnalytics: analytics });
     } catch (err) {
-        console.error("Dashboard error:", err);
-        res.status(500).json({ msg: "Server error" });
+        next(err);
     }
 };
 
-exports.getMonthlyReport = async (req, res) => {
+exports.getMonthlyReport = async (req, res, next) => {
     try {
         const transactions = await prisma.transaction.findMany({
             where: { userId: req.userId },
@@ -39,14 +53,14 @@ exports.getMonthlyReport = async (req, res) => {
             if (!report[month]) {
                 report[month] = { income: 0, expense: 0, balance: 0 };
             }
-            if (t.type === "income") report[month].income += t.amount;
-            else report[month].expense += t.amount;
+            const amount = parseFloat(t.amount);
+            if (t.type === "income") report[month].income += amount;
+            else report[month].expense += amount;
             report[month].balance = report[month].income - report[month].expense;
         });
 
         res.json(report);
     } catch (err) {
-        console.error("Monthly report error:", err);
-        res.status(500).json({ msg: "Server error" });
+        next(err);
     }
 };

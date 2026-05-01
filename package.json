@@ -9,7 +9,7 @@
     "db:generate": "npx prisma generate",
     "db:migrate": "npx prisma migrate dev",
     "db:studio": "npx prisma studio",
-    "test": "node test_suite.js",
+    "test": "jest",
     "postinstall": "prisma generate"
   },
   "keywords": [
@@ -29,12 +29,19 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "winston": "^3.19.0",
+    "zod": "^4.4.1"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
+    "jest": "^30.3.0",
+    "jest-mock-extended": "^4.0.1",
+    "nodemon": "^3.0.0",
     "prisma": "^7.8.0",
-    "nodemon": "^3.0.0"
+    "supertest": "^7.2.2"
   }
 }

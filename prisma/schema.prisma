@@ -28,7 +28,7 @@ model Category {
 
 model Transaction {
   id          Int      @id @default(autoincrement())
-  amount      Float
+  amount      Decimal  @db.Decimal(10, 2)
   type        String   // income | expense
   description String
   date        DateTime
@@ -43,7 +43,7 @@ model Transaction {
 
 model Budget {
   id         Int    @id @default(autoincrement())
-  limit      Float
+  limit      Decimal @db.Decimal(10, 2)
   month      String // Format: YYYY-MM
   categoryId Int
   userId     Int
